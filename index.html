@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>CapGEM — Capgemini Volunteering Hub</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Montserrat:wght@700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --cap-blue:#0065A3; --cap-blue-2:#00A1E0; --cap-mint:#28D7C7;
+    --ink:#0b0c0c; --ink-on-dark:#eef7ff; --muted:#5f6b75;
+    --card:rgba(255,255,255,.78); --glass-border:rgba(255,255,255,.36);
+    --radius:16px; --shadow:0 10px 40px rgba(0,0,0,.18);
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:#06131f;color:var(--ink);overflow-x:hidden}
+
+  /* ==== Animated BG (refined) ==== */
+  .bg{position:fixed;inset:0;z-index:-3;
+    background:radial-gradient(900px 600px at 8% 12%, rgba(0,161,224,.22), transparent 60%),
+               radial-gradient(900px 600px at 92% 8%, rgba(40,215,199,.18), transparent 60%),
+               linear-gradient(180deg,#04101a 0%,#0a2338 100%);
+    animation:bgFloat 24s ease-in-out infinite;}
+  @keyframes bgFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(18px)}}
+
+  /* Capgemini-esque wave grid */
+  .wave{position:fixed;inset:-10%;z-index:-2;opacity:.45;mix-blend-mode:screen;pointer-events:none;
+    background:repeating-conic-gradient(from 0deg, rgba(0,101,163,.10) 0 12deg, transparent 12deg 24deg);
+    animation:swirl 40s linear infinite;}
+  @keyframes swirl{to{transform:rotate(360deg)}}
+
+  .container{max-width:1180px;margin:auto;padding:24px}
+  header{position:sticky;top:0;backdrop-filter:saturate(1.4) blur(12px);background:rgba(6,19,31,.55);border-bottom:1px solid rgba(255,255,255,.08);z-index:10}
+  .brand{display:flex;align-items:center;gap:12px;color:var(--ink-on-dark);font-weight:800;letter-spacing:.3px}
+  .brand .gem{width:18px;height:18px;border-radius:40% 60% 60% 40%/60% 40% 60% 40%;
+    background:radial-gradient(circle at 30% 30%,#fff,var(--cap-blue-2) 60%,var(--cap-blue));box-shadow:0 0 16px #7fd6ff}
+  nav a{color:#eaf7ff;text-decoration:none;margin-right:16px;position:relative}
+  nav a::after{content:"";position:absolute;left:0;bottom:-4px;width:0;height:2px;background:linear-gradient(90deg,var(--cap-mint),var(--cap-blue-2));transition:width .25s ease}
+  nav a:hover::after{width:100%}
+
+  /* ==== Hero with parallax ==== */
+  .hero{padding:68px 0 26px;color:#fff;will-change:transform}
+  .eyebrow{color:#b9f7ff;font-weight:700;text-transform:uppercase;letter-spacing:.12em}
+  h1{font-family:Montserrat,Inter,sans-serif;font-size:clamp(36px,5vw,64px);margin:10px 0 10px;line-height:1.04;text-shadow:0 12px 40px rgba(0,0,0,.35)}
+  .sub{color:#e9f9ff;opacity:.92;font-size:clamp(16px,2.1vw,20px);max-width:70ch}
+
+  .glass{margin-top:18px;background:var(--card);backdrop-filter:blur(10px) saturate(1.3);border:1px solid var(--glass-border);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
+  .search{display:grid;grid-template-columns:1fr auto;gap:10px;padding:14px}
+  .search input{border:0;font-size:1.05rem;padding:16px;border-radius:12px;outline:none;background:#fff}
+  .btn{appearance:none;border:0;border-radius:12px;padding:16px 18px;font-weight:800;letter-spacing:.2px;background:linear-gradient(135deg,var(--cap-blue),var(--cap-blue-2));color:#fff;cursor:pointer;position:relative;overflow:hidden;box-shadow:0 10px 24px rgba(0,101,163,.35),inset 0 0 0 1px rgba(255,255,255,.15);transition:transform .15s ease, box-shadow .2s ease}
+  .btn:hover{transform:translateY(-2px);box-shadow:0 14px 36px rgba(0,101,163,.45)}
+  .btn:active{transform:translateY(0)}
+  .btn::after{content:"";position:absolute;inset:-40% -20%;background:radial-gradient(circle at 10% 10%,#fff8,transparent 40%);transform:translateX(-60%);transition:transform .6s ease}
+  .btn:hover::after{transform:translateX(40%)}
+  .btn[data-ripple]{--rX:50%;--rY:50%;--rS:0;--rO:.35}
+  .btn[data-ripple]::before{content:"";position:absolute;top:var(--rY);left:var(--rX);width:var(--rS);height:var(--rS);transform:translate(-50%,-50%);border-radius:50%;background:#fff;opacity:var(--rO);pointer-events:none;transition:width .5s ease,height .5s ease,opacity .6s ease}
+
+  .filters{display:flex;flex-wrap:wrap;gap:10px;padding:12px 14px;border-top:1px dashed rgba(255,255,255,.22)}
+  .chip{display:inline-flex;align-items:center;gap:8px;padding:10px 12px;color:#0b0c0c;background:#fff;border-radius:999px;border:1px solid #e7ecf2;font-weight:700;box-shadow:0 6px 16px rgba(0,0,0,.08);transition:transform .15s ease, box-shadow .25s ease}
+  .chip:hover{transform:translateY(-2px);box-shadow:0 10px 24px rgba(0,0,0,.12)}
+  .chip select{border:0;background:transparent;font:inherit}
+
+  h2{color:#fff;font-size:clamp(22px,3vw,32px);margin:34px 0 14px}
+
+  /* ==== Cards with tilt ==== */
+  .highlights{display:grid;gap:18px;grid-template-columns:repeat(3,1fr);margin-top:14px}
+  @media (max-width:980px){.highlights{grid-template-columns:1fr}}
+  .card{background:var(--card);border:1px solid var(--glass-border);border-radius:var(--radius);padding:18px;backdrop-filter:blur(8px);box-shadow:var(--shadow);position:relative;overflow:hidden;transform-style:preserve-3d;transition:transform .25s ease,box-shadow .25s ease}
+  .card h3{margin:0 0 6px}
+
+  /* ==== Trusted org tiles ==== */
+  .orgs{display:grid;gap:14px;grid-template-columns:repeat(4,1fr)}
+  @media (max-width:980px){.orgs{grid-template-columns:repeat(2,1fr)}}
+  .org{position:relative;border-radius:14px;overflow:hidden;min-height:140px;box-shadow:var(--shadow);transform:translateZ(0);transition:transform .3s ease}
+  .org:hover{transform:translateY(-6px)}
+  .org img{width:100%;height:100%;object-fit:cover;display:block;filter:saturate(1.06) contrast(1.05)}
+  .overlay{position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.15),rgba(0,0,0,.55));display:flex;align-items:flex-end;padding:12px;color:#fff}
+  .verified{position:absolute;top:10px;right:10px;background:linear-gradient(135deg,var(--cap-mint),var(--cap-blue-2));color:#001b2b;font-weight:900;padding:6px 10px;border-radius:999px;box-shadow:0 8px 20px rgba(0,0,0,.2)}
+
+  /* ==== Results with View Transition support ==== */
+  .results{display:grid;gap:16px;grid-template-columns:repeat(3,1fr)}
+  @media (max-width:1100px){.results{grid-template-columns:repeat(2,1fr)}}
+  @media (max-width:780px){.results{grid-template-columns:1fr}}
+  .opp{display:grid;grid-template-rows:160px auto;border-radius:16px;overflow:hidden;background:#fff;box-shadow:var(--shadow);transform:translateY(0);transition:transform .2s ease,box-shadow .2s ease;view-transition-name: card;}
+  .opp:hover{transform:translateY(-6px);box-shadow:0 20px 46px rgba(0,0,0,.28)}
+  .opp img{width:100%;height:100%;object-fit:cover}
+  .opp .body{padding:14px 14px 16px}
+  .meta{color:var(--muted);font-size:.95rem;display:flex;gap:12px;flex-wrap:wrap}
+  .tags{display:flex;gap:8px;margin:10px 0}
+  .tag{border:1px solid #d8dee6;border-radius:999px;padding:4px 10px;font-size:.85rem;background:#f7f9fc}
+  .more{display:none;margin-top:8px}
+  .toggle{margin-top:8px;background:#f4f6fb;border:1px solid #d8dee6;border-radius:10px;padding:8px 10px;cursor:pointer}
+
+  /* ==== Mailing list ==== */
+  .mailing{margin:40px 0 14px;padding:24px;border-radius:18px;background:linear-gradient(135deg, rgba(0,101,163,.12), rgba(0,161,224,.12));border:1px solid rgba(0,161,224,.25);color:#e7f8ff}
+  .mailing h3{color:#fff;margin-top:0}
+  .mailing form{display:grid;gap:10px;grid-template-columns:2fr 1fr}
+  @media (max-width:680px){.mailing form{grid-template-columns:1fr}}
+  .mailing input{padding:14px 16px;border-radius:12px;border:1px solid #bfe6ff;outline:none;font-size:1rem}
+
+  footer{color:#cfe6f5;padding:34px 0 40px;border-top:1px solid rgba(255,255,255,.08)}
+  .container{view-transition-name: container}
+
+  /* Scroll reveal */
+  .reveal{opacity:0;transform:translateY(16px);transition:opacity .6s ease,transform .6s ease}
+  .reveal.show{opacity:1;transform:translateY(0)}
+
+  /* Respect reduced motion */
+  @media (prefers-reduced-motion: reduce){
+    .bg,.wave{animation:none}
+    .btn,.card,.org,.opp,.chip{transition:none}
+  }
+</style>
+</head>
+<body>
+<div class="bg"></div><div class="wave"></div>
+
+<header>
+  <div class="container" style="display:flex;align-items:center;justify-content:space-between;gap:16px;padding:14px 24px;">
+    <div class="brand" aria-label="CapGEM — Capgemini Volunteering Hub">
+      <span class="gem" aria-hidden="true"></span> CapGEM
+    </div>
+    <nav aria-label="primary">
+      <a href="#trusted">Organisations</a>
+      <a href="#results">Opportunities</a>
+      <a href="#impact">Impact</a>
+    </nav>
+  </div>
+</header>
+
+<section class="container hero" id="hero">
+  <div class="eyebrow">Volunteer with friends • Earn badges • Verified orgs</div>
+  <h1>Find volunteering near you</h1>
+  <p class="sub">Search by <strong>postcode</strong> and <strong>available time</strong>, squad up with friends, and collect shiny badges. Good vibes + real impact.</p>
+
+  <div class="glass reveal" style="transition-delay:.05s">
+    <div class="search">
+      <input id="postcode" placeholder="Enter your postcode (e.g. SE1 2AA)" aria-label="Enter postcode">
+      <button class="btn" id="searchBtn" data-ripple>Search</button>
+    </div>
+    <div class="filters" aria-label="Quick filters">
+      <div class="chip">Distance
+        <select id="distance"><option value="">Any</option><option value="2">≤ 2 miles</option><option value="5">≤ 5 miles</option><option value="10">≤ 10 miles</option></select>
+      </div>
+      <div class="chip">Time
+        <select id="time"><option value="">Any</option><option value="one-off">One-off (weekend)</option><option value="evenings">Evenings</option><option value="weekly">Weekly</option></select>
+      </div>
+      <div class="chip">Cause
+        <select id="cause"><option value="">Any</option><option>Environment</option><option>Food support</option><option>Education</option><option>Community events</option></select>
+      </div>
+      <button class="chip" id="clearFilters">Clear</button>
+    </div>
+  </div>
+
+  <div class="highlights">
+    <article class="card reveal tilt" style="transition-delay:.1s">
+      <h3>Volunteer with friends</h3>
+      <p>Bring your besties. 80% of folks said this makes them way more likely to join.</p>
+      <button class="btn" data-ripple style="background:linear-gradient(135deg,var(--cap-mint),var(--cap-blue-2))">Start a group</button>
+    </article>
+    <article class="card reveal tilt" style="transition-delay:.15s">
+      <h3>Earn badges</h3>
+      <p>72% want recognition. Unlock badges like <strong>Community Helper</strong> & <strong>Skills Sharer</strong>.</p>
+      <button class="btn" data-ripple>See badges</button>
+    </article>
+    <article class="card reveal tilt" style="transition-delay:.2s">
+      <h3>Volunteering Information</h3>
+      <p>TL;DR first, details on tap. Every card has a quick “Show more”.</p>
+       <button class="btn" data-ripple>Show more</button>
+    </article>
+  </div>
+</section>
+
+<section class="container reveal" id="trusted">
+  <h2>Trusted organisations (verified because trust = everything)</h2>
+  <div class="orgs">
+    <article class="org">
+      <img alt="City Park Trust" src="https://images.unsplash.com/photo-1470770903676-69b98201ea1c?q=80&w=1400&auto=format&fit=crop">
+      <div class="verified">✔ Verified</div>
+      <div class="overlay"><strong>City Park Trust</strong></div>
+    </article>
+    <article class="org">
+      <!-- FIXED image (reliable placeholder) -->
+      <img alt="Riverside Food Bank" src="https://picsum.photos/seed/foodbank/1400/900">
+      <div class="verified">✔ Verified</div>
+      <div class="overlay"><strong>Riverside Food Bank</strong></div>
+    </article>
+    <article class="org">
+      <img alt="Books for All" src="https://images.unsplash.com/photo-1497633762265-9d179a990aa6?q=80&w=1400&auto=format&fit=crop">
+      <div class="verified">✔ Verified</div>
+      <div class="overlay"><strong>Books for All</strong></div>
+    </article>
+    <article class="org">
+      <img alt="Community Events Hub" src="https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?q=80&w=1400&auto=format&fit=crop">
+      <div class="verified">✔ Verified</div>
+      <div class="overlay"><strong>Community Events Hub</strong></div>
+    </article>
+  </div>
+</section>
+
+<section class="container reveal" id="results" style="margin-top:26px">
+  <h2>Opportunities near you</h2>
+  <div class="results" id="resultsList">
+    <article class="opp" data-distance="2" data-time="one-off" data-cause="Environment">
+      <img alt="Volunteers cleaning a park" src="https://images.unsplash.com/photo-1461354464878-ad92f492a5a0?q=80&w=1400&auto=format&fit=crop">
+      <div class="body">
+        <h3>Park Clean-up (Saturday)</h3>
+        <div class="meta"><span>📍 TF1 • 1.2 miles</span><span>🕒 One-off • 3 hours</span><span>✔ City Park Trust (Verified)</span></div>
+        <div class="tags"><span class="tag">Environment</span><span class="tag">Friends welcome</span><span class="tag">Badge: Community Helper</span></div>
+        <p class="summary">Help keep our green spaces clean. Equipment provided.</p>
+        <div class="more">You get to flex your eco-warrior energy while rocking comfy shoes and vibing with a small squad. They hand you the gear, so no need to bring your own mop or leaf blower. It’s chill, beginner-friendly, and you’ll probably leave with cleaner shoes than you came with (or not, but it’s the thought that counts). Bonus: you can say “I touched grass” and actually mean it.
+          .</div>
+        <button class="toggle" aria-expanded="false">Show more</button>
+        <div style="margin-top:10px;display:flex;gap:10px">
+          <button class="btn" data-ripple>Apply now</button>
+          <button class="btn" data-ripple style="background:linear-gradient(135deg,var(--cap-mint),var(--cap-blue-2))">Invite friends</button>
+        </div>
+      </div>
+    </article>
+
+    <article class="opp" data-distance="5" data-time="evenings" data-cause="Education">
+      <img alt="Student mentoring" src="https://images.unsplash.com/photo-1509062522246-3755977927d7?q=80&w=1400&auto=format&fit=crop">
+      <div class="body">
+        <h3>Homework Club Mentor (Evenings)</h3>
+        <div class="meta"><span>📍 TF3 • 4.8 miles</span><span>🕒 1 evening/week</span><span>✔ Books for All (Verified)</span></div>
+        <div class="tags"><span class="tag">Education</span><span class="tag">Friends welcome</span><span class="tag">Badge: Skills Sharer</span></div>
+        <p class="summary">Support young people with maths and reading in a relaxed setting.</p>
+        <div class="more">Training provided. Enhanced DBS may be required (org assists).</div>
+        <button class="toggle" aria-expanded="false">Show more</button>
+        <div style="margin-top:10px;display:flex;gap:10px">
+          <button class="btn" data-ripple>Apply now</button>
+          <button class="btn" data-ripple style="background:linear-gradient(135deg,var(--cap-mint),var(--cap-blue-2))">Invite friends</button>
+        </div>
+      </div>
+    </article>
+
+    <article class="opp" data-distance="10" data-time="weekly" data-cause="Food support">
+      <img alt="Food bank volunteering" src="https://images.unsplash.com/photo-1509099836639-18ba1795216d?q=80&w=1400&auto=format&fit=crop">
+      <div class="body">
+        <h3>Food Bank Shift (Weekly)</h3>
+        <div class="meta"><span>📍 TF8 • 7.5 miles</span><span>🕒 Weekly • 2 hours</span><span>✔ Riverside Food Bank (Verified)</span></div>
+        <div class="tags"><span class="tag">Food support</span><span class="tag">Friends welcome</span><span class="tag">Badge: Community Star</span></div>
+        <p class="summary">Sort donations and prepare parcels for local families.</p>
+        <div class="more">Accessible venue. Light lifting involved; alternatives available.</div>
+        <button class="toggle" aria-expanded="false">Show more</button>
+        <div style="margin-top:10px;display:flex;gap:10px">
+          <button class="btn" data-ripple>Apply now</button>
+          <button class="btn" data-ripple style="background:linear-gradient(135deg,var(--cap-mint),var(--cap-blue-2))">Invite friends</button>
+        </div>
+      </div>
+    </article>
+  </div>
+</section>
+
+<section class="container reveal" id="impact" style="margin:34px 0 10px">
+  <h2>Your sustainable impact</h2>
+  <div class="highlights">
+    <article class="card tilt"><h3>Hours contributed</h3><p>Log your time and unlock badges as you go. Progress bar = motivation unlocked.</p></article>
+    <article class="card tilt"><h3>Causes supported</h3><p>Environment, Education, Food support — pick your passion, flex your impact.</p></article>
+    <article class="card tilt"><h3>CO₂e saved / waste avoided</h3><p>Each activity shows an estimated impact. Small actions, big planet energy.</p></article>
+  </div>
+</section>
+
+<section class="container mailing reveal" aria-labelledby="ml-title">
+  <h3 id="ml-title">Stay in the loop — fresh volunteering drops</h3>
+  <p class="sub" style="color:#dff6ff;max-width:60ch">Join the CapGEM mailing list for curated opportunities near you (no spam, just wholesome do-good alerts).</p>
+  <form onsubmit="event.preventDefault(); document.getElementById('ml-ok').textContent='You’re on the list — see you doing good stuff! ✨';">
+    <label class="visually-hidden" for="ml-email">Email address</label>
+    <input id="ml-email" type="email" placeholder="your.name@example.com" required>
+    <button class="btn" data-ripple type="submit">Subscribe</button>
+  </form>
+  <p id="ml-ok" aria-live="polite" style="margin-top:10px;"></p>
+</section>
+
+<footer class="container">© CapGEM — Capgemini Volunteering Hub • Accessibility • Privacy • Contact</footer>
+
+<script>
+  // Scroll reveal (stagger)
+  const obs = new IntersectionObserver((entries)=>{
+    entries.forEach((e,i)=>{ if(e.isIntersecting){ e.target.style.transitionDelay = (i*40)+'ms'; e.target.classList.add('show'); obs.unobserve(e.target);} });
+  }, {threshold:.12});
+  document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
+
+  // Parallax hero
+  const hero = document.getElementById('hero');
+  window.addEventListener('scroll', ()=>{
+    const y = Math.min(1, window.scrollY/600);
+    hero.style.transform = `translateY(${y* -10}px)`;
+  }, {passive:true});
+
+  // Tilt cards (pointer-based)
+  document.querySelectorAll('.tilt').forEach(card=>{
+    let px=0, py=0;
+    card.addEventListener('pointermove', (e)=>{
+      const r = card.getBoundingClientRect();
+      const x = (e.clientX - r.left)/r.width - .5;
+      const y = (e.clientY - r.top)/r.height - .5;
+      px = x; py = y;
+      card.style.transform = `rotateX(${(-y*4).toFixed(2)}deg) rotateY(${(x*4).toFixed(2)}deg) translateY(-6px)`;
+    });
+    card.addEventListener('pointerleave', ()=>{ card.style.transform='translateY(0)'; });
+  });
+
+  // Button ripple (subtle)
+  document.querySelectorAll('[data-ripple]').forEach(btn=>{
+    btn.addEventListener('pointerdown', (e)=>{
+      const r = btn.getBoundingClientRect();
+      const size = Math.max(r.width, r.height)*1.2;
+      btn.style.setProperty('--rX', (e.clientX - r.left)+'px');
+      btn.style.setProperty('--rY', (e.clientY - r.top)+'px');
+      btn.style.setProperty('--rS', size+'px');
+      btn.style.setProperty('--rO', .35);
+      setTimeout(()=>btn.style.setProperty('--rO', 0), 350);
+    });
+  });
+
+  // View Transitions for filtering & show-more (progressive enhancement)
+  const supportsVT = !!document.startViewTransition;
+  function withTransition(fn){
+    if (supportsVT) document.startViewTransition(fn); else fn();
+  }
+
+  // Show more toggles
+  document.querySelectorAll('.opp .toggle').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const more = btn.previousElementSibling;
+      const expanded = btn.getAttribute('aria-expanded') === 'true';
+      withTransition(()=>{ more.style.display = expanded ? 'none' : 'block'; });
+      btn.setAttribute('aria-expanded', String(!expanded));
+      btn.textContent = expanded ? 'Show more' : 'Show less';
+    });
+  });
+
+  // Simple filter demo with transitions
+  const res = document.getElementById('resultsList');
+  function applyFilters(){
+    const d = document.getElementById('distance').value;
+    const t = document.getElementById('time').value;
+    const c = document.getElementById('cause').value.toLowerCase();
+    withTransition(()=>{
+      res.querySelectorAll('.opp').forEach(card=>{
+        const ok = (!d || Number(card.dataset.distance) <= Number(d)) &&
+                   (!t || card.dataset.time === t) &&
+                   (!c || card.dataset.cause.toLowerCase() === c);
+        card.style.display = ok ? '' : 'none';
+      });
+    });
+  }
+  ['distance','time','cause'].forEach(id=>document.getElementById(id).addEventListener('change', applyFilters));
+  document.getElementById('clearFilters').addEventListener('click', ()=>{['distance','time','cause'].forEach(id=>document.getElementById(id).value=''); applyFilters();});
+  document.getElementById('searchBtn').addEventListener('click', ()=>{ applyFilters(); document.getElementById('results').scrollIntoView({behavior:'smooth'}); });
+
+  // SR-only helper
+  const sr = document.createElement('style');
+  sr.innerHTML=".visually-hidden{position:absolute!important;height:1px;width:1px;overflow:hidden;clip:rect(1px,1px,1px,1px);white-space:nowrap}";
+  document.head.appendChild(sr);
+</script>
+</body>
+</html>
